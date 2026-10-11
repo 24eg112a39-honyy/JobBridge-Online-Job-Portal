@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>JobBridge | Admin Login</title>
+
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+  <!-- HEADER -->
+
+  <header class="topbar">
+
+    <a class="brand" href="index.html">
+
+      <span class="brand-icon">
+        JB
+      </span>
+
+      JobBridge
+
+    </a>
+
+    <nav>
+
+      <a href="index.html">
+        Find Jobs
+      </a>
+
+      <a href="index.html#post-job">
+        Post a Job
+      </a>
+
+    </nav>
+
+  </header>
+
+
+  <!-- LOGIN SECTION -->
+
+  <main>
+
+    <section class="post-section">
+
+      <div class="post-intro">
+
+        <span class="eyebrow">
+          JOBBRIDGE ADMINISTRATION
+        </span>
+
+        <h1>
+          Welcome back,<br>
+          <span>Admin.</span>
+        </h1>
+
+        <p>
+          Sign in to manage jobs, review candidate applications,
+          and monitor your recruitment portal.
+        </p>
+
+        <div class="check-line">
+          ✓ Manage job postings
+        </div>
+
+        <div class="check-line">
+          ✓ Review applications
+        </div>
+
+        <div class="check-line">
+          ✓ Monitor JobBridge activity
+        </div>
+
+      </div>
+
+
+      <!-- LOGIN FORM -->
+
+      <form id="adminLoginForm"
+            class="form-card">
+
+        <h3>
+          Admin Login
+        </h3>
+
+        <p class="muted">
+          Enter your administrator credentials.
+        </p>
+
+
+        <label>
+
+          Username
+
+          <input
+            type="text"
+            id="username"
+            required
+            placeholder="Enter username">
+
+        </label>
+
+
+        <label>
+
+          Password
+
+          <input
+            type="password"
+            id="password"
+            required
+            placeholder="Enter password">
+
+        </label>
+
+
+        <button
+          class="btn btn-primary btn-full"
+          type="submit">
+
+          Login to Dashboard
+
+        </button>
+
+
+        <p
+          class="form-feedback"
+          id="loginFeedback"
+          role="status">
+        </p>
+
+      </form>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <a class="brand footer-brand"
+       href="index.html">
+
+      <span class="brand-icon">
+        JB
+      </span>
+
+      JobBridge
+
+    </a>
+
+    <span>
+      Online Job Portal & Recruitment System
+    </span>
+
+    <span>
+      Built with HTML, CSS, JavaScript & Spring Boot
+    </span>
+
+  </footer>
+
+
+  <!-- JAVASCRIPT -->
+
+  <script>
+
+    const API_BASE =
+     "http://localhost:8080/api";
+
+
+    document
+      .getElementById("adminLoginForm")
+      .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const username =
+          document.getElementById("username").value.trim();
+
+        const password =
+          document.getElementById("password").value;
+
+
+        const feedback =
+          document.getElementById("loginFeedback");
+
+
+        feedback.textContent =
+          "Checking login...";
+
+
+        try {
+
+          const response =
+            await fetch(API_BASE + "/admin/login", {
+
+              method: "POST",
+
+              headers: {
+                "Content-Type": "application/json"
+              },
+
+              body: JSON.stringify({
+                username: username,
+                password: password
+              })
+
+            });
+
+
+          const result =
+            await response.json();
+
+
+          if (result.success) {
+
+            // Remember login for this browser session
+
+            sessionStorage.setItem(
+              "adminLoggedIn",
+              "true"
+            );
+
+
+            feedback.textContent =
+              "Login successful. Opening dashboard...";
+
+
+            setTimeout(function() {
+
+              window.location.href =
+                "admin.html";
+
+            }, 500);
+
+
+          } else {
+
+            feedback.textContent =
+              "Invalid username or password.";
+
+          }
+
+        }
+
+        catch (error) {
+
+          console.error(error);
+
+          feedback.textContent =
+            "Unable to connect to backend. Make sure Spring Boot is running.";
+
+        }
+
+      });
+
+  </script>
+
+</body>
+
+</html>

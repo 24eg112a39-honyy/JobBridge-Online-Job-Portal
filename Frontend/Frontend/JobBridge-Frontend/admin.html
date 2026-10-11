@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>JobBridge | Admin Dashboard</title>
+
+  <!-- Same CSS used by index.html -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- SAME HEADER STYLE -->
+  <header class="topbar">
+
+    <a class="brand" href="index.html">
+      <span class="brand-icon">JB</span>
+      JobBridge
+    </a>
+
+    <nav>
+      <a href="index.html">Find Jobs</a>
+      <a href="index.html#post-job">Post a Job</a>
+    </nav>
+
+    <button class="btn btn-outline" onclick="logout()">
+      Logout
+    </button>
+
+  </header>
+
+
+  <main>
+
+    <!-- ADMIN HERO -->
+    <section class="hero">
+
+      <div class="hero-content">
+
+        <span class="eyebrow">
+          JOBBRIDGE ADMINISTRATION
+        </span>
+
+        <h1>
+          Manage your<br />
+          <span>job portal.</span>
+        </h1>
+
+        <p>
+          View job postings, monitor applications, and manage your recruitment
+          activities from one place.
+        </p>
+
+      </div>
+
+
+      <div class="hero-card">
+
+        <div class="hero-card-top">
+          <span class="live-dot"></span>
+          Admin overview
+        </div>
+
+        <div class="hero-stat">
+          <strong id="heroJobCount">0</strong>
+          <span>Jobs posted</span>
+        </div>
+
+        <div class="mini-job">
+
+          <div class="mini-logo">
+            AP
+          </div>
+
+          <div>
+            <b id="heroApplicationCount">0</b>
+            <small>Applications received</small>
+          </div>
+
+          <span class="mini-arrow">↗</span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- DASHBOARD -->
+    <section class="search-section">
+
+      <span class="eyebrow">
+        ADMIN DASHBOARD
+      </span>
+
+      <h2>
+        Overview
+      </h2>
+
+      <p class="muted">
+        Manage jobs and review applications submitted by candidates.
+      </p>
+
+
+      <!-- STAT CARDS -->
+
+      <div class="job-grid">
+
+        <div class="form-card">
+
+          <span class="eyebrow">
+            JOBS
+          </span>
+
+          <h2 id="jobCount">
+            0
+          </h2>
+
+          <p class="muted">
+            Total jobs posted
+          </p>
+
+        </div>
+
+
+        <div class="form-card">
+
+          <span class="eyebrow">
+            APPLICATIONS
+          </span>
+
+          <h2 id="applicationCount">
+            0
+          </h2>
+
+          <p class="muted">
+            Total applications received
+          </p>
+
+        </div>
+
+
+        <div class="form-card">
+
+          <span class="eyebrow">
+            STATUS
+          </span>
+
+          <h2>
+            Active
+          </h2>
+
+          <p class="muted">
+            JobBridge system status
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- JOBS SECTION -->
+    <section class="search-section">
+
+      <span class="eyebrow">
+        JOB MANAGEMENT
+      </span>
+
+      <h2>
+        Posted jobs
+      </h2>
+
+      <p class="muted">
+        View all jobs currently available on JobBridge.
+      </p>
+
+
+      <div class="form-card">
+
+        <div id="jobsContainer">
+
+          <p class="muted">
+            Loading jobs...
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- APPLICATIONS SECTION -->
+    <section class="search-section">
+
+      <span class="eyebrow">
+        APPLICATION MANAGEMENT
+      </span>
+
+      <h2>
+        Candidate applications
+      </h2>
+
+      <p class="muted">
+        Review applications submitted by candidates.
+      </p>
+
+
+      <div class="form-card">
+
+        <div id="applicationsContainer">
+
+          <p class="muted">
+            Loading applications...
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- SAME FOOTER STYLE -->
+  <footer>
+
+    <a class="brand footer-brand" href="index.html">
+
+      <span class="brand-icon">
+        JB
+      </span>
+
+      JobBridge
+
+    </a>
+
+    <span>
+      Online Job Portal & Recruitment System
+    </span>
+
+    <span>
+      Built with HTML, CSS, JavaScript & Spring Boot
+    </span>
+
+  </footer>
+
+
+  <script>
+
+    const API_BASE = "http://localhost:8080/api";
+
+
+    // =========================
+    // LOAD JOBS
+    // =========================
+
+    async function loadJobs() {
+
+      try {
+
+        const response =
+          await fetch(API_BASE + "/admin/jobs");
+
+        if (!response.ok) {
+          throw new Error("Unable to load jobs");
+        }
+
+        const jobs = await response.json();
+
+
+        document.getElementById("jobCount").textContent =
+          jobs.length;
+
+        document.getElementById("heroJobCount").textContent =
+          jobs.length;
+
+
+        const container =
+          document.getElementById("jobsContainer");
+
+
+        if (jobs.length === 0) {
+
+          container.innerHTML =
+            "<p class='muted'>No jobs posted yet.</p>";
+
+          return;
+        }
+
+
+        let html = "";
+
+
+        jobs.forEach(job => {
+
+          html += `
+
+            <div class="mini-job">
+
+              <div class="mini-logo">
+                ${job.company
+                  ? job.company.substring(0, 2).toUpperCase()
+                  : "JB"}
+              </div>
+
+              <div>
+
+                <b>
+                  ${job.title}
+                </b>
+
+                <small>
+                  ${job.company} · ${job.location}
+                </small>
+
+                <small>
+                  ${job.employmentType || "Full-time"}
+                </small>
+
+              </div>
+
+            </div>
+
+          `;
+
+        });
+
+
+        container.innerHTML = html;
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        document.getElementById("jobsContainer").innerHTML =
+          "<p class='muted'>Unable to load jobs. Make sure the backend is running.</p>";
+
+      }
+
+    }
+
+
+
+    // =========================
+    // LOAD APPLICATIONS
+    // =========================
+
+    async function loadApplications() {
+
+      try {
+
+        const response =
+          await fetch(API_BASE + "/admin/applications");
+
+
+        if (!response.ok) {
+          throw new Error("Unable to load applications");
+        }
+
+
+        const applications =
+          await response.json();
+
+
+        document.getElementById("applicationCount").textContent =
+          applications.length;
+
+
+        document.getElementById("heroApplicationCount").textContent =
+          applications.length;
+
+
+        const container =
+          document.getElementById("applicationsContainer");
+
+
+        if (applications.length === 0) {
+
+          container.innerHTML =
+            "<p class='muted'>No applications received yet.</p>";
+
+          return;
+
+        }
+
+
+        let html = "";
+
+
+        applications.forEach(application => {
+
+          html += `
+
+            <div class="mini-job">
+
+              <div class="mini-logo purple">
+                ${application.applicantName
+                  ? application.applicantName.substring(0, 2).toUpperCase()
+                  : "AP"}
+              </div>
+
+
+              <div>
+
+                <b>
+                  ${application.applicantName}
+                </b>
+
+                <small>
+                  ${application.applicantEmail}
+                </small>
+
+                <small>
+                  Phone: ${application.applicantPhone || "Not provided"}
+                </small>
+
+                <small>
+                  Status: ${application.status || "NEW"}
+                </small>
+
+              </div>
+
+            </div>
+
+          `;
+
+        });
+
+
+        container.innerHTML = html;
+
+      }
+
+
+      catch (error) {
+
+        console.error(error);
+
+        document.getElementById("applicationsContainer").innerHTML =
+          "<p class='muted'>Unable to load applications. Make sure the backend is running.</p>";
+
+      }
+
+    }
+
+
+
+    // =========================
+    // LOGOUT
+    // =========================
+
+    function logout() {
+
+      window.location.href = "index.html";
+
+    }
+
+
+
+    // =========================
+    // START DASHBOARD
+    // =========================
+
+    loadJobs();
+
+    loadApplications();
+
+  </script>
+
+</body>
+</html>
